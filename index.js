@@ -9,7 +9,7 @@ viewport.fillRect(0, 0, canvas.width, canvas.height);
 const GRAVITY = 0.7;
 
 class Sprite {
-	constructor({identifier, position, velocity, color}) {
+	constructor({identifier, position, velocity, color, attackHitboxOffset}) {
 		this.identifier = identifier;
 
 		this.position = position;
@@ -32,26 +32,33 @@ class Sprite {
 		this.jumpForce = 20;
 
 		this.attackHitbox = {
-			position: this.position,
+			position: {
+				x: 0,
+				y: 0
+			},
+			offset: attackHitboxOffset,
 			width: 100,
 			height: 50
 		}
 
-		this.lastKey;
+		this.lastKey = '';
 		this.isJumping = false;
+		this.isAttacking = false;
 	}
 
 	draw () {
 		viewport.fillStyle = this.color;
 		viewport.fillRect(this.position.x, this.position.y, this.width, this.height);
 
-		viewport.fillStyle = 'green';
-		viewport.fillRect(
-			this.attackHitbox.position.x,
-			this.attackHitbox.position.y,
-			this.attackHitbox.width,
-			this.attackHitbox.height
-		);
+		if(this.isAttacking) {
+			viewport.fillStyle = 'green';
+			viewport.fillRect(
+				this.attackHitbox.position.x,
+				this.attackHitbox.position.y,
+				this.attackHitbox.width,
+				this.attackHitbox.height
+			);
+		}
 	}
 
 	update () {
@@ -78,16 +85,24 @@ class Sprite {
 			this.velocity.y += GRAVITY;
 		}
 
-		this.attackHitbox.position.x = this.position.x;
-		this.attackHitbox.position.y = this.position.y;
+		this.attackHitbox.position.x = this.position.x + this.attackHitbox.offset.x;
+		this.attackHitbox.position.y = this.position.y + this.attackHitbox.offset.y;
 
 		this.draw();
 	}
+
+	attack () {
+		this.isAttacking = true;
+
+		setTimeout(() => {
+			this.isAttacking = false;
+		}, 200);
+	}
 }
 
-const player = new Sprite (
+const playerOne = new Sprite (
 	{
-		identifier: "Player",
+		identifier: "Player One",
 		position: {
 			x: 0,
 			y: 0
@@ -96,15 +111,19 @@ const player = new Sprite (
 			x: 0,
 			y: 0
 		},
-		color: 'blue'
+		color: 'blue',
+		attackHitboxOffset: {
+			x: 0,
+			y: 0
+		}
 	}
 )
 
-player.draw();
+playerOne.draw();
 
-const enemy = new Sprite (
+const playerTwo = new Sprite (
 	{
-		identifier: "Enemy",
+		identifier: "Player Two",
 		position: {
 			x: 400,
 			y: 50
@@ -113,11 +132,15 @@ const enemy = new Sprite (
 			x: 0,
 			y: 0
 		},
-		color: 'red'
+		color: 'red',
+		attackHitboxOffset: {
+			x: -50,
+			y: 0
+		}
 	}
 )
 
-enemy.draw();
+playerTwo.draw();
 
 const keys = {
 	a: {
@@ -146,40 +169,59 @@ function main () {
 	viewport.fillStyle = 'black';
 	viewport.fillRect(0, 0, canvas.width, canvas.height);
 
-	player.update();
-	enemy.update();
+	playerOne.update();
+	playerTwo.update();
 
 	entitiesMovement();
 	hitboxesCollision();
 }
 
 function entitiesMovement () {
-	player.velocity.x = 0;
-	enemy.velocity.x = 0;
+	playerOne.velocity.x = 0;
+	playerTwo.velocity.x = 0;
 
-	if(keys.a.pressed && player.lastKey == 'a') {
-		player.velocity.x = -player.moveSpeed;
+	if(keys.a.pressed && playerOne.lastKey == 'a') {
+		playerOne.velocity.x = -playerOne.moveSpeed;
 	}
 	
-	if (keys.d.pressed && player.lastKey == 'd') {
-		player.velocity.x = player.moveSpeed;
+	if (keys.d.pressed && playerOne.lastKey == 'd') {
+		playerOne.velocity.x = playerOne.moveSpeed;
 	}
 
-	if(keys.ArrowLeft.pressed && enemy.lastKey == 'ArrowLeft') {
-		enemy.velocity.x = -enemy.moveSpeed;
+	if(keys.ArrowLeft.pressed && playerTwo.lastKey == 'ArrowLeft') {
+		playerTwo.velocity.x = -playerTwo.moveSpeed;
 	}
 	
-	if (keys.ArrowRight.pressed && enemy.lastKey == 'ArrowRight') {
-		enemy.velocity.x = enemy.moveSpeed;
+	if (keys.ArrowRight.pressed && playerTwo.lastKey == 'ArrowRight') {
+		playerTwo.velocity.x = playerTwo.moveSpeed;
 	}
 }
 
 function hitboxesCollision () {
-	if((player.attackHitbox.position.x + player.attackHitbox.width) >= enemy.position.x
-	&& player.attackHitbox.position.x <= (enemy.positionXPlusSize)
-	&& (player.attackHitbox.position.y + player.attackHitbox.height) >= enemy.position.y) {
-		console.log('test');
+	if(playerOne.isAttacking && isEntityInAttackRange({
+		attacker: playerOne,
+		target: playerTwo
+		})
+	) {
+		playerOne.isAttacking = false;
+		console.log('Player One attacked Player Two successfully.');
 	}
+
+	if(playerTwo.isAttacking && isEntityInAttackRange({
+		attacker: playerTwo,
+		target: playerOne
+		})
+	) {
+		playerTwo.isAttacking = false;
+		console.log('Player Two attacked Player One successfully.');
+	}
+}
+
+function isEntityInAttackRange ({attacker, target}) {
+	return ((attacker.attackHitbox.position.x + attacker.attackHitbox.width) >= target.position.x
+		&& attacker.attackHitbox.position.x <= target.positionXPlusSize
+		&& (attacker.attackHitbox.position.y + attacker.attackHitbox.height) >= target.position.y
+		&& attacker.attackHitbox.position.y <= target.positionYPlusSize);
 }
 
 main();
@@ -188,37 +230,45 @@ window.addEventListener('keydown', (event) => {
 	switch(event.key) {
 		case 'a':
 			keys.a.pressed = true;
-			player.lastKey = 'a';
+			playerOne.lastKey = 'a';
 			break;
 
 		case 'd':
 			keys.d.pressed = true;
-			player.lastKey = 'd';
+			playerOne.lastKey = 'd';
 			break;
 
 		case 'w':
-			if(player.isJumping) break;
+			if(playerOne.isJumping) break;
 
-			player.velocity.y = -player.jumpForce;
-			player.isJumping = true;
+			playerOne.velocity.y = -playerOne.jumpForce;
+			playerOne.isJumping = true;
+			break;
+
+		case ' ':
+			if(!playerOne.isAttacking) playerOne.attack();
 			break;
 
 		case 'ArrowLeft':
 			keys.ArrowLeft.pressed = true;
-			enemy.lastKey = 'ArrowLeft';
+			playerTwo.lastKey = 'ArrowLeft';
 			break;
 
 		case 'ArrowRight':
 			keys.ArrowRight.pressed = true;
-			enemy.lastKey = 'ArrowRight';
+			playerTwo.lastKey = 'ArrowRight';
 			break;
 
 		case 'ArrowUp':
-			if(enemy.isJumping) break;
+			if(playerTwo.isJumping) break;
 
-			enemy.velocity.y = -enemy.jumpForce;
-			enemy.isJumping = true;
+			playerTwo.velocity.y = -playerTwo.jumpForce;
+			playerTwo.isJumping = true;
 			break;
+
+			case 'Enter':
+				if(!playerTwo.isAttacking) playerTwo.attack();
+				break;
 	}
 });
 
