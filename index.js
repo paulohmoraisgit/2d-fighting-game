@@ -1,8 +1,8 @@
 const canvas = document.querySelector('canvas');
 const viewport = canvas.getContext('2d');
 
-canvas.width = 926;
-canvas.height = 526;
+canvas.width = 940;
+canvas.height = 550;
 
 viewport.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -21,15 +21,17 @@ class Sprite {
 		this.positionXPlusSize = this.position.x + this.width;
 		this.positionYPlusSize = this.position.y + this.height;
 
-		this.collision = {
-			x: 0,
-			y: 0
+		this.movementBlocker = {
+			left: false,
+			right: false
 		}
 
 		this.color = color;
 
 		this.moveSpeed = 5;
 		this.jumpForce = 20;
+
+		this.health = 100;
 
 		this.attackHitbox = {
 			position: {
@@ -46,22 +48,13 @@ class Sprite {
 		this.isAttacking = false;
 	}
 
-	draw () {
-		viewport.fillStyle = this.color;
-		viewport.fillRect(this.position.x, this.position.y, this.width, this.height);
-
-		if(this.isAttacking) {
-			viewport.fillStyle = 'green';
-			viewport.fillRect(
-				this.attackHitbox.position.x,
-				this.attackHitbox.position.y,
-				this.attackHitbox.width,
-				this.attackHitbox.height
-			);
-		}
+	update () {
+		this.updateMovement();
+		this.updateHitboxPosition();
+		this.draw();
 	}
 
-	update () {
+	updateMovement() {
 		this.position.x += this.velocity.x;
 		this.position.y += this.velocity.y;
 		
@@ -84,11 +77,26 @@ class Sprite {
 		} else {
 			this.velocity.y += GRAVITY;
 		}
+	}
 
+	updateHitboxPosition () {
 		this.attackHitbox.position.x = this.position.x + this.attackHitbox.offset.x;
 		this.attackHitbox.position.y = this.position.y + this.attackHitbox.offset.y;
+	}
 
-		this.draw();
+	draw () {
+		viewport.fillStyle = this.color;
+		viewport.fillRect(this.position.x, this.position.y, this.width, this.height);
+
+		if(this.isAttacking) {
+			viewport.fillStyle = 'green';
+			viewport.fillRect(
+				this.attackHitbox.position.x,
+				this.attackHitbox.position.y,
+				this.attackHitbox.width,
+				this.attackHitbox.height
+			);
+		}
 	}
 
 	attack () {
@@ -126,7 +134,7 @@ const playerTwo = new Sprite (
 		identifier: "Player Two",
 		position: {
 			x: 400,
-			y: 50
+			y: 0
 		},
 		velocity: {
 			x: 0,
@@ -172,23 +180,23 @@ function main () {
 	playerOne.update();
 	playerTwo.update();
 
-	entitiesMovement();
+	playersMovement();
 	hitboxesCollision();
 }
 
-function entitiesMovement () {
+function playersMovement() {
 	playerOne.velocity.x = 0;
 	playerTwo.velocity.x = 0;
 
-	if(keys.a.pressed && playerOne.lastKey == 'a') {
+	if (keys.a.pressed && playerOne.lastKey == 'a' && !playerOne.movementBlocker.left) {
 		playerOne.velocity.x = -playerOne.moveSpeed;
 	}
 	
-	if (keys.d.pressed && playerOne.lastKey == 'd') {
+	if (keys.d.pressed && playerOne.lastKey == 'd' && !playerOne.movementBlocker.right) {
 		playerOne.velocity.x = playerOne.moveSpeed;
 	}
 
-	if(keys.ArrowLeft.pressed && playerTwo.lastKey == 'ArrowLeft') {
+	if (keys.ArrowLeft.pressed && playerTwo.lastKey == 'ArrowLeft') {
 		playerTwo.velocity.x = -playerTwo.moveSpeed;
 	}
 	
@@ -197,27 +205,35 @@ function entitiesMovement () {
 	}
 }
 
-function hitboxesCollision () {
-	if(playerOne.isAttacking && isEntityInAttackRange({
+function hitboxesCollision() {
+	if (playerOne.isAttacking && isTargetInAttackRange({
 		attacker: playerOne,
 		target: playerTwo
 		})
 	) {
 		playerOne.isAttacking = false;
-		console.log('Player One attacked Player Two successfully.');
+
+		playerTwo.health -= 10;
+		document.querySelector('#player-two-health').style.width = playerTwo.health + '%';
+
+		if(playerTwo.health <= 0) showWinner();
 	}
 
-	if(playerTwo.isAttacking && isEntityInAttackRange({
+	if (playerTwo.isAttacking && isTargetInAttackRange({
 		attacker: playerTwo,
 		target: playerOne
 		})
 	) {
 		playerTwo.isAttacking = false;
-		console.log('Player Two attacked Player One successfully.');
+
+		playerOne.health -= 10;
+		document.querySelector('#player-one-health').style.width = playerOne.health + '%';
+
+		if(playerOne.health <= 0) showWinner();
 	}
 }
 
-function isEntityInAttackRange ({attacker, target}) {
+function isTargetInAttackRange({attacker, target}) {
 	return ((attacker.attackHitbox.position.x + attacker.attackHitbox.width) >= target.position.x
 		&& attacker.attackHitbox.position.x <= target.positionXPlusSize
 		&& (attacker.attackHitbox.position.y + attacker.attackHitbox.height) >= target.position.y
@@ -225,6 +241,34 @@ function isEntityInAttackRange ({attacker, target}) {
 }
 
 main();
+
+let timer = 60;
+function decreaseTimer() {
+	if(timer == 0) {
+		showWinner();
+		return;
+	}
+
+	timer--;
+	document.querySelector('#timer').innerHTML = timer;
+
+	setTimeout(decreaseTimer, 1000);
+}
+
+decreaseTimer();
+
+function showWinner() {
+	winTextElement = document.querySelector('#win-text');
+	winTextElement.style.display = 'flex';
+
+	if (playerOne.health > playerTwo.health) {
+		winTextElement.innerHTML = 'Player One WINS!';
+	} else if (playerTwo.health > playerOne.health) {
+		winTextElement.innerHTML = 'Player Two WINS!';
+	} else {
+		winTextElement.innerHTML = 'Tie!';
+	}
+}
 
 window.addEventListener('keydown', (event) => {
 	switch(event.key) {

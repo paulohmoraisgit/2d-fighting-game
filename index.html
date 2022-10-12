@@ -1,11 +1,70 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>2D Fighting Game</title>
-    <script src="index.js" defer></script>
-  </head>
-  <body>
-    <canvas>
-    </canvas>
-  </body>
+	<head>
+		<title>2D Fighting Game</title>
+		<script src="index.js" defer></script>
+	</head>
+	<body style="margin: 0">
+		<div id="container" style="position: relative; display: inline-block">
+			<div id="top-ui" style="
+				position: absolute;
+				display: flex;
+				align-items: center;
+				width: 100%;
+				box-sizing: border-box;
+				padding: 30px;
+			">
+				<div style="position: relative; width: 100%; height: 30px; display: flex; justify-content: flex-end">
+					<div style="width: 100%; height: 100%; background-color: yellow;"></div>
+					<div id="player-one-health" style="
+						position: absolute;
+						bottom: 0;
+						width: 100%;
+						height: 100%;
+						background-color: green;
+					"></div>
+				</div>
+
+				<div id="timer" style="
+				width: 100px;
+				height: 100px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-shrink: 0;
+				background-color: red;
+				color: white;
+				font-family: Arial;
+				font-size: 50px;
+				font-weight: bold;
+				user-select: none">10</div>
+
+				<div style="position: relative; width: 100%; height: 30px;">
+					<div style="width: 100%; height: 100%; background-color: yellow;"></div>
+					<div id="player-two-health" style="
+						position: absolute;
+						bottom: 0;
+						width: 100%;
+						height: 100%;
+						background-color: green;
+					"></div>
+				</div>
+			</div>
+
+			<div id="win-text" style="
+				position: absolute;
+				color: white;
+				width: 100%;
+				height: 100%;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				font-weight: bold;
+				font-size: 20px;
+				font-family: Helvetica;
+			"></div>
+
+			<canvas></canvas>
+		</div>
+	</body>
 </html>
