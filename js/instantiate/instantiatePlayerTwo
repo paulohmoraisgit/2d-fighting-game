@@ -1,0 +1,80 @@
+const playerTwo = new Character (
+	{
+		position: {
+			x: 675,
+			y: ground
+		},
+		imageSource: 'img/kenji/Idle.png',
+		spritePositionOffset: {
+			x: 225,
+			y: 170
+		},
+		scale: 2.5,
+		maxFrames: 4,
+		sprites: {
+			idle: {
+				imageSource: 'img/kenji/Idle.png',
+				maxFrames: 4
+			},
+			run: {
+				imageSource: 'img/kenji/Run.png',
+				maxFrames: 8
+			},
+			jump: {
+				imageSource: 'img/kenji/Jump.png',
+				maxFrames: 2
+			},
+			fall: {
+				imageSource: 'img/kenji/Fall.png',
+				maxFrames: 2
+			},
+			attack1: {
+				imageSource: 'img/kenji/Attack1.png',
+				maxFrames: 4,
+				attackHitbox: {
+					offset: {
+						x: -180,
+						y: 10
+					},
+					width: 180,
+					height: 130
+				},
+				attackDamageFrames: {
+					min: 2,
+					max: 2
+				},
+				attackCooldown: 0
+			},
+			attack2: {
+				imageSource: 'img/kenji/Attack2.png',
+				maxFrames: 4,
+				attackHitbox: {
+					offset: {
+						x: -190,
+						y: -40
+					},
+					width: 190,
+					height: 140
+				},
+				attackDamageFrames: {
+					min: 2,
+					max: 2
+				},
+				attackCooldown: 0
+			},
+			takeHit: {
+				imageSource: 'img/kenji/Take hit.png',
+				maxFrames: 3
+			},
+			death: {
+				imageSource: 'img/kenji/Death.png',
+				maxFrames: 7
+			}
+		},
+		velocity: {
+			x: 0,
+			y: 0
+		},
+		moveSpeed: 7
+	}
+)

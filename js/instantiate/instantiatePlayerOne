@@ -1,0 +1,80 @@
+const playerOne = new Character (
+	{
+		position: {
+			x: 300,
+			y: ground
+		},
+		imageSource: 'img/samuraiMack/Idle.png',
+		spritePositionOffset: {
+			x: 225,
+			y: 155
+		},
+		scale: 2.5,
+		maxFrames: 8,
+		sprites: {
+			idle: {
+				imageSource: 'img/samuraiMack/Idle.png',
+				maxFrames: 8
+			},
+			run: {
+				imageSource: 'img/samuraiMack/Run.png',
+				maxFrames: 8
+			},
+			jump: {
+				imageSource: 'img/samuraiMack/Jump.png',
+				maxFrames: 2
+			},
+			fall: {
+				imageSource: 'img/samuraiMack/Fall.png',
+				maxFrames: 2
+			},
+			attack1: {
+				imageSource: 'img/samuraiMack/Attack1.png',
+				maxFrames: 6,
+				attackHitbox: {
+					offset: {
+						x: 50,
+						y: -35
+					},
+					width: 210,
+					height: 170
+				},
+				attackDamageFrames: {
+					min: 4,
+					max: 4
+				},
+				attackCooldown: 500
+			},
+			attack2: {
+				imageSource: 'img/samuraiMack/Attack2.png',
+				maxFrames: 6,
+				attackHitbox: {
+					offset: {
+						x: 50,
+						y: 20
+					},
+					width: 220,
+					height: 130
+				},
+				attackDamageFrames: {
+					min: 4,
+					max: 4
+				},
+				attackCooldown: 500
+			},
+			takeHit: {
+				imageSource: 'img/samuraiMack/Take Hit - white silhouette.png',
+				maxFrames: 4
+			},
+			death: {
+				imageSource: 'img/samuraiMack/Death.png',
+				maxFrames: 6
+			}
+		},
+		velocity: {
+			x: 0,
+			y: 0
+		},
+		moveSpeed: 9
+	}
+)

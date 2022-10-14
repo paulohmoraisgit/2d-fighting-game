@@ -2,7 +2,38 @@
 <html>
 	<head>
 		<title>2D Fighting Game</title>
-		<script src="index.js" defer></script>
+		
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link rel="icon" type="image/x-icon" href="https://img.icons8.com/external-flaticons-lineal-color-flat-icons/64/000000/external-katana-martial-arts-flaticons-lineal-color-flat-icons.png"> 
+
+		<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+		<style rel="stylesheet" type="text/css">
+			* {
+				font-family: 'Press Start 2P', cursive;
+			}
+		</style>
+			
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js" integrity="sha512-gmwBmiTVER57N3jYS3LinA9eb8aHrJua5iQD7yqYCKa5x6Jjc7VDVaEA0je0Lu0bP9j7tEjV3+1qUm6loO99Kw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+		<script src="js/utils.js" defer></script>
+		<script src="js/Sprite.js" defer></script>
+
+		<script src="js/Character/Character.js" defer></script>
+		<script src="js/Character/switchCharacterSprite.js" defer></script>
+		<script src="js/Character/isCharacterOnAnimation.js" defer></script>
+		<script src="js/Character/updateCharacterMovement.js" defer></script>
+		<script src="js/Character/characterCombat.js" defer></script>
+
+		<script src="js/controlsDetection.js" defer></script>
+		<script src="js/playersMovement.js" defer></script>
+		<script src="js/AttackHitboxes.js" defer></script>
+
+		<script src="js/instantiate/instantiatePlayerOne" defer></script>
+		<script src="js/instantiate/instantiatePlayerTwo" defer></script>
+
+		<script src="js/app.js" defer></script>
 	</head>
 	<body style="margin: 0">
 		<div id="container" style="position: relative; display: inline-block">
@@ -14,39 +45,54 @@
 				box-sizing: border-box;
 				padding: 30px;
 			">
-				<div style="position: relative; width: 100%; height: 30px; display: flex; justify-content: flex-end">
-					<div style="width: 100%; height: 100%; background-color: yellow;"></div>
+				<div style="
+					position: relative;
+					width: 100%;
+					height: 30px;
+					display: flex;
+					justify-content: flex-end;					
+					border: 4px solid white;
+					border-right: 0 none;
+				">
+					<div style="width: 100%; background-color: red;"></div>
 					<div id="player-one-health" style="
 						position: absolute;
 						bottom: 0;
 						width: 100%;
 						height: 100%;
-						background-color: green;
+						background-color: #818CF8;
 					"></div>
 				</div>
 
 				<div id="timer" style="
 				width: 100px;
-				height: 100px;
+				height: 50px;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				flex-shrink: 0;
-				background-color: red;
+				background-color: black;
 				color: white;
-				font-family: Arial;
-				font-size: 50px;
-				font-weight: bold;
-				user-select: none">10</div>
+				font-size: 20px;
+				user-select: none;
+				border: 4px solid white">10</div>
 
-				<div style="position: relative; width: 100%; height: 30px;">
-					<div style="width: 100%; height: 100%; background-color: yellow;"></div>
+				<div style="
+				position: relative;
+				width: 100%;
+				height: 30px;
+				display: flex;
+				justify-content: flex-end;
+				border: 4px solid white;
+				border-left: 0 none;
+				">
+					<div style="width: 100%; height: 100%; background-color: red;"></div>
 					<div id="player-two-health" style="
 						position: absolute;
-						bottom: 0;
+						left: 0;
 						width: 100%;
 						height: 100%;
-						background-color: green;
+						background-color: #818CF8;
 					"></div>
 				</div>
 			</div>
@@ -61,7 +107,7 @@
 				justify-content: center;
 				font-weight: bold;
 				font-size: 20px;
-				font-family: Helvetica;
+				user-select: none
 			"></div>
 
 			<canvas></canvas>
